@@ -1,0 +1,7 @@
+{
+
+  "TimeFormat": "HH.mm.ss",
+  "LogDirectory": "logs/",
+  "FileExtension": ".txt",
+  "MaxLogs": 3
+}

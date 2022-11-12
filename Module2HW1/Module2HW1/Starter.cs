@@ -2,42 +2,48 @@
 {
     public class Starter
     {
+        private readonly FileService _fileService;
         private readonly Logger _logger;
         private readonly Actions _actions;
         private readonly Random _random;
         public Starter()
         {
-            _logger = Logger.GetInstance();
-            _actions = new Actions();
+            string projectDirectory = Directory.GetParent(Environment.CurrentDirectory).Parent.Parent.FullName;
+            _fileService = new FileService();
+            _logger = Logger.GetInstance(_fileService, $"{projectDirectory}/logger_config.json");
+            _actions = new Actions(_fileService, $"{projectDirectory}/logger_config.json");
             _random = new Random();
         }
         public void Run()
         {
             for (int i = 0; i < 100; i++)
             {
-                int method = _random.Next(1, 3 + 1);
-                Result result;
-                switch (method)
+                int method = _random.Next(1, 99 + 1);
+                try
                 {
-                    case 1:
-                        result = _actions.Method200();
-                        break;
-                    case 2:
-                        result = _actions.Method300();
-                        break;
-                    case 3:
-                        result = _actions.Method400();
-                        break;
-                    default:
-                        result = new Result(true);
-                        break;
+                    if (method < 80)
+                    {
+                        _actions.Method200();
+                    }
+                    else if (method < 95)
+                    {
+                        _actions.Method300();
+                    }
+                    else
+                    {
+                        _actions.Method400();
+                    }
                 }
-                if (!result.Status)
+                catch (BusinessException ex)
                 {
-                    _logger.Write(Logger.Type.Error, result.Message);
+                    _logger.Write(Logger.Type.Warning, $"Action got this custom Exception: {ex.Message}");
+                }
+                catch (Exception ex)
+                {
+                    _logger.Write(Logger.Type.Error, $"Action failed by reason: {ex}");
                 }
             }
-            _logger.GetLog();
+            _logger.CheckLogCount();
         }
     }
 }

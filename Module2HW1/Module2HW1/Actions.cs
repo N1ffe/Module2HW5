@@ -3,23 +3,22 @@
     public class Actions
     {
         private readonly Logger _logger;
-        public Actions()
+        public Actions(FileService fileService, string configPath)
         {
-            _logger = Logger.GetInstance();
+            _logger = Logger.GetInstance(fileService, configPath);
         }
-        public Result Method200()
+        public bool Method200()
         {
             _logger.Write(Logger.Type.Info, "Start method: Method200()");
-            return new Result(true);
+            return true;
         }
-        public Result Method300()
+        public bool Method300()
         {
-            _logger.Write(Logger.Type.Warning, "Skipped logic in method: Method300()");
-            return new Result(true);
+            throw new BusinessException("Skipped logic in method: Method300");
         }
-        public Result Method400()
+        public bool Method400()
         {
-            return new Result(false, "I broke a logic");
+            throw new Exception("I broke a logic");
         }
     }
 }
